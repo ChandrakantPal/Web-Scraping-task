@@ -50,11 +50,11 @@ const preparePageForTests = async (page) => {
   const browser = await puppeteer.launch({
     devtools: true,
     // cors issue
-    args: [
-      "--disable-web-security",
-      "--disable-features=IsolateOrigins",
-      "--disable-site-isolation-trials",
-    ],
+    // args: [
+    //   "--disable-web-security",
+    //   "--disable-features=IsolateOrigins",
+    //   "--disable-site-isolation-trials",
+    // ],
     headless: true,
     defaultViewport: false,
   })
@@ -68,7 +68,10 @@ const preparePageForTests = async (page) => {
       const orig = req.url()
       const text = await response.text()
       const status = response.status()
-      console.log({ orig, status, text: text.length })
+      console.log(
+        { orig, status },
+        orig === "https://portal.grab.com/foodweb/v2/search"
+      )
       if (orig === "https://portal.grab.com/foodweb/v2/search") {
         const data = await response.json()
         coords.push(...data.searchResult.searchMerchants)
@@ -105,6 +108,7 @@ const preparePageForTests = async (page) => {
       console.log("Successfully wrote file")
     }
   })
+  await page.screenshot({ path: "3.png" })
   // Clean up.
   await browser.close()
 })()
@@ -125,6 +129,7 @@ const load = async (page) => {
       await load(page)
     }
   } catch (error) {
+    console.log({ error })
     return
   }
 }
